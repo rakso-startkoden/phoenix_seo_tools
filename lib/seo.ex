@@ -76,9 +76,9 @@ defmodule PhoenixSEOTools.SEO do
   """
   def build_meta(conn_or_socket, options \\ []) do
     defaults = [
-      title: "",
-      description: nil,
-      image: nil,
+      title: Application.get_env(:phoenix_seo_tools, :name),
+      description: Application.get_env(:phoenix_seo_tools, :description),
+      image: Application.get_env(:phoenix_seo_tools, :logo_url),
       breadcrumbs: [],
       article: nil,
       site_name: Application.get_env(:phoenix_seo_tools, :name),
@@ -143,7 +143,10 @@ defmodule PhoenixSEOTools.SEO do
   end
 
   defp build_page_links(conn_or_socket, options) do
-    Enum.reject([new_page_link("canonical", get_current_url(conn_or_socket, options))], &is_nil(&1.href))
+    Enum.reject(
+      [new_page_link("canonical", get_current_url(conn_or_socket, options))],
+      &is_nil(&1.href)
+    )
   end
 
   defp build_open_graph(conn_or_socket, options) do
@@ -180,7 +183,7 @@ defmodule PhoenixSEOTools.SEO do
         "url" => options.site_url,
         "logo" => options.site_logo_url,
         "description" => options.site_description,
-        "sameAs" => options.site_social_media_links
+        "sameAs" => Keyword.values(options.site_social_media_links)
       }
     ]
   end

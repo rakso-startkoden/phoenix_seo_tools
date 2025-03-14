@@ -35,8 +35,8 @@ config :phoenix_seo_tools,
   logo_url: "https://yourdomain.com/images/logo.png",
   description: "My site description",
   social_media_links: [
-    "https://twitter.com/yourhandle",
-    "https://facebook.com/yourpage"
+    twitter: "https://twitter.com/yourhandle",
+    facebook: "https://facebook.com/yourpage"
   ],
   author: "My Name"
 ```
@@ -102,14 +102,17 @@ end
 
 Add the meta component to your `<head>` tag inside root layout:
 
-```elixir
-# In lib/your_app_web/components/layouts/root.html.heex
+
+### In lib/your_app_web/components/layouts/root.html.heex
+```diff
 <head>
-  ...
-  <PhoenixSEOTools.Components.Head.meta meta={@meta} page_title={@page_title} />
-  ...
+-  <.live_title default="Placeholder" suffix=" · Phoenix Framework">
+-    {assigns[:page_title]}
+-  </.live_title>
++  <PhoenixSEOTools.Components.Head.meta meta={@meta} page_title={assigns[:page_title]} />
 </head>
 ```
+
 
 ## Documentation
 
