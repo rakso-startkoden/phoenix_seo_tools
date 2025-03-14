@@ -1,13 +1,20 @@
 defmodule ExWebTools.MixProject do
   use Mix.Project
 
+  @version "0.0.1"
+  @description "SEO optimization tools for Phoenix and Phoenix LiveView applications"
+  @source_url "https://github.com/startkoden/ex_web_tools"
+
   def project do
     [
       app: :ex_web_tools,
-      version: "0.1.0",
-      elixir: "~> 1.16",
+      version: @version,
+      elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      description: @description,
+      package: package(),
+      docs: docs()
     ]
   end
 
@@ -21,8 +28,27 @@ defmodule ExWebTools.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:phoenix, "~> 1.7.19"},
-      {:phoenix_live_view, "~> 1.0.4"}
+      {:phoenix, "~> 1.7.20"},
+      {:phoenix_live_view, "~> 1.0.5"},
+      {:ex_doc, "~> 0.29", only: :dev, runtime: false},
+      {:jason, "~> 1.0"}
+    ]
+  end
+
+  defp package do
+    [
+      maintainers: ["Startkoden"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => @source_url},
+      files: ~w(lib .formatter.exs mix.exs README.md LICENSE)
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: ["README.md"],
+      source_url: @source_url
     ]
   end
 end

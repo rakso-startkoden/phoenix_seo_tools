@@ -1,5 +1,30 @@
 defmodule ExWebTools.SEO do
-  @moduledoc false
+  @moduledoc """
+  Core functionality for generating SEO-related metadata for your Phoenix application.
+
+  This module provides functions to generate various SEO elements:
+  - Basic meta tags (title, description, image)
+  - Open Graph tags for social media sharing
+  - JSON-LD structured data (Organization, Website, Article, BreadcrumbList)
+  - Canonical URLs
+
+  ## Configuration
+
+  To use this module, add the following to your application config:
+
+  ```elixir
+  config :ex_web_tools,
+    name: "Your Site Name",
+    url: "https://yourdomain.com",
+    logo_url: "https://yourdomain.com/images/logo.png",
+    description: "Your site description",
+    social_media_links: [
+      "https://twitter.com/yourhandle",
+      "https://facebook.com/yourpage"
+    ],
+    author: "Your Name"
+  ```
+  """
   alias Phoenix.LiveView.Socket
   alias ExWebTools.PageLink
   alias ExWebTools.PageMeta
@@ -11,6 +36,51 @@ defmodule ExWebTools.SEO do
   @site_social_media_links Application.compile_env!(:ex_web_tools, :social_media_links)
   @site_author Application.compile_env!(:ex_web_tools, :author)
 
+  @doc """
+  Builds metadata for a page and assigns it to the connection or socket.
+
+  This is the main function you'll use in your controllers or LiveViews to add SEO
+  elements to your pages.
+
+  ## Parameters
+
+  * `conn_or_socket` - A Plug.Conn or Phoenix.LiveView.Socket
+  * `options` - Keyword list of options:
+    * `:title` - The page title (required)
+    * `:description` - A description of the page (optional)
+    * `:image` - URL to an image representing the page (optional)
+    * `:breadcrumbs` - List of breadcrumb items (optional), each item should be a map with `:label` and `:to` keys
+    * `:article` - Article details for blog posts or articles (optional), should be a map with `:title`, `:description`, `:image`, `:inserted_at`, and `:slug` keys
+
+  ## Returns
+
+  * A conn or socket with the `:meta` assign containing all generated metadata
+
+  ## Examples
+
+  ```elixir
+  # In a controller:
+  conn = ExWebTools.SEO.build_meta(conn, title: "Welcome", description: "Our homepage")
+
+  # In a LiveView:
+  socket = ExWebTools.SEO.build_meta(socket, 
+    title: "Blog Post",
+    description: "An interesting article",
+    image: "https://example.com/images/post.jpg",
+    breadcrumbs: [
+      %{label: "Home", to: "/"},
+      %{label: "Blog", to: "/blog"}
+    ],
+    article: %{
+      title: "Blog Post",
+      description: "An interesting article",
+      image: "https://example.com/images/post.jpg",
+      inserted_at: ~N[2023-01-01 12:00:00],
+      slug: "blog-post"
+    }
+  )
+  ```
+  """
   def build_meta(conn_or_socket, options \\ []) do
     defaults = [
       title: "",
