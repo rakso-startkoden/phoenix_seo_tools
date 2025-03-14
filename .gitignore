@@ -20,7 +20,7 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-ex_web_tools-*.tar
+phoenix_seo_tools-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/

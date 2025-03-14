@@ -1,4 +1,4 @@
-defmodule ExWebTools.SEO do
+defmodule PhoenixSEOTools.SEO do
   @moduledoc """
   Core functionality for generating SEO-related metadata for your Phoenix application.
 
@@ -13,7 +13,7 @@ defmodule ExWebTools.SEO do
   To use this module, add the following to your application config:
 
   ```elixir
-  config :ex_web_tools,
+  config :phoenix_seo_tools,
     name: "Your Site Name",
     url: "https://yourdomain.com",
     logo_url: "https://yourdomain.com/images/logo.png",
@@ -26,15 +26,8 @@ defmodule ExWebTools.SEO do
   ```
   """
   alias Phoenix.LiveView.Socket
-  alias ExWebTools.PageLink
-  alias ExWebTools.PageMeta
-
-  @site_name Application.compile_env!(:ex_web_tools, :name)
-  @site_url Application.compile_env!(:ex_web_tools, :url)
-  @site_logo_url Application.compile_env!(:ex_web_tools, :logo_url)
-  @site_description Application.compile_env!(:ex_web_tools, :description)
-  @site_social_media_links Application.compile_env!(:ex_web_tools, :social_media_links)
-  @site_author Application.compile_env!(:ex_web_tools, :author)
+  alias PhoenixSEOTools.PageLink
+  alias PhoenixSEOTools.PageMeta
 
   @doc """
   Builds metadata for a page and assigns it to the connection or socket.
@@ -60,10 +53,10 @@ defmodule ExWebTools.SEO do
 
   ```elixir
   # In a controller:
-  conn = ExWebTools.SEO.build_meta(conn, title: "Welcome", description: "Our homepage")
+  conn = PhoenixSEOTools.SEO.build_meta(conn, title: "Welcome", description: "Our homepage")
 
   # In a LiveView:
-  socket = ExWebTools.SEO.build_meta(socket, 
+  socket = PhoenixSEOTools.SEO.build_meta(socket, 
     title: "Blog Post",
     description: "An interesting article",
     image: "https://example.com/images/post.jpg",
@@ -87,30 +80,36 @@ defmodule ExWebTools.SEO do
       description: nil,
       image: nil,
       breadcrumbs: [],
-      article: nil
+      article: nil,
+      site_name: Application.get_env(:phoenix_seo_tools, :name),
+      site_url: Application.get_env(:phoenix_seo_tools, :url),
+      site_logo_url: Application.get_env(:phoenix_seo_tools, :logo_url),
+      site_description: Application.get_env(:phoenix_seo_tools, :description),
+      site_social_media_links: Application.get_env(:phoenix_seo_tools, :social_media_links),
+      site_author: Application.get_env(:phoenix_seo_tools, :author)
     ]
 
     options = options |> Keyword.validate!(defaults) |> Map.new()
 
     metas =
       List.flatten([
-        build_page_seo(conn_or_socket, options.title, options.description, options.image),
-        build_open_graph(conn_or_socket, options.title, options.description, options.image)
+        build_page_seo(conn_or_socket, options),
+        build_open_graph(conn_or_socket, options)
       ])
 
     schemas =
       [
-        build_website_schema(),
-        build_org_schema()
+        build_website_schema(options),
+        build_org_schema(options)
       ]
 
-    links = List.flatten([build_page_links(conn_or_socket)])
+    links = List.flatten([build_page_links(conn_or_socket, options)])
 
     {schemas, breadcrumbs} =
       if Enum.empty?(options.breadcrumbs) do
         {schemas, []}
       else
-        schemas = schemas ++ build_breadcrumb_schema(options.breadcrumbs)
+        schemas = schemas ++ build_breadcrumb_schema(options.breadcrumbs, options)
         {schemas, options.breadcrumbs}
       end
 
@@ -118,7 +117,7 @@ defmodule ExWebTools.SEO do
       if is_nil(options.article) do
         schemas
       else
-        schemas ++ build_article_schema(options.article)
+        schemas ++ build_article_schema(options.article, options)
       end
 
     schemas = List.flatten(schemas)
@@ -132,62 +131,62 @@ defmodule ExWebTools.SEO do
     })
   end
 
-  defp build_page_seo(_conn_or_socket, title, description, image) do
+  defp build_page_seo(_conn_or_socket, options) do
     Enum.reject(
       [
-        new_page_meta("title", build_page_title(title)),
-        new_page_meta("description", description |> strip_html_tags() |> truncate()),
-        new_page_meta("image", image)
+        new_page_meta("title", build_page_title(options.title, options)),
+        new_page_meta("description", options.description |> strip_html_tags() |> truncate()),
+        new_page_meta("image", options.image)
       ],
       &is_nil(&1.content)
     )
   end
 
-  defp build_page_links(conn_or_socket) do
-    Enum.reject([new_page_link("canonical", get_current_url(conn_or_socket))], &is_nil(&1.href))
+  defp build_page_links(conn_or_socket, options) do
+    Enum.reject([new_page_link("canonical", get_current_url(conn_or_socket, options))], &is_nil(&1.href))
   end
 
-  defp build_open_graph(conn_or_socket, title, description, image) do
+  defp build_open_graph(conn_or_socket, options) do
     Enum.reject(
       [
-        new_page_meta("og:title", build_page_title(title)),
+        new_page_meta("og:title", build_page_title(options.title, options)),
         new_page_meta("og:type", "website"),
         new_page_meta("og:locale", "sv_SE"),
-        new_page_meta("og:description", description |> strip_html_tags() |> truncate()),
-        new_page_meta("og:url", get_current_url(conn_or_socket)),
-        new_page_meta("og:image", image)
+        new_page_meta("og:description", options.description |> strip_html_tags() |> truncate()),
+        new_page_meta("og:url", get_current_url(conn_or_socket, options)),
+        new_page_meta("og:image", options.image)
       ],
       &is_nil(&1.content)
     )
   end
 
-  defp build_website_schema do
+  defp build_website_schema(options) do
     [
       %{
         "@context" => "https://schema.org/",
         "@type" => "WebSite",
-        "name" => @site_name,
-        "url" => @site_url
+        "name" => options.site_name,
+        "url" => options.site_url
       }
     ]
   end
 
-  defp build_org_schema do
+  defp build_org_schema(options) do
     [
       %{
         "@context" => "https://schema.org/",
         "@type" => "Organization",
-        "name" => @site_name,
-        "url" => @site_url,
-        "logo" => @site_logo_url,
-        "description" => @site_description,
-        "sameAs" => @site_social_media_links
+        "name" => options.site_name,
+        "url" => options.site_url,
+        "logo" => options.site_logo_url,
+        "description" => options.site_description,
+        "sameAs" => options.site_social_media_links
       }
     ]
   end
 
-  defp build_breadcrumb_schema(breadcrumbs) when is_list(breadcrumbs) do
-    base_url = @site_url
+  defp build_breadcrumb_schema(breadcrumbs, options) when is_list(breadcrumbs) do
+    base_url = options.site_url
 
     [
       %{
@@ -208,7 +207,7 @@ defmodule ExWebTools.SEO do
     ]
   end
 
-  def build_article_schema(article) do
+  def build_article_schema(article, options) do
     [
       %{
         "@context" => "https://schema.org",
@@ -220,30 +219,30 @@ defmodule ExWebTools.SEO do
         "mainEntityOfPage" => %{
           "@type" => "WebPage",
           # Replace with the actual URL of the article if needed
-          "@id" => "#{@site_url}/#{article.slug}"
+          "@id" => "#{options.site_url}/#{article.slug}"
         },
         "author" => %{
           "@type" => "Person",
-          "name" => @site_author
+          "name" => options.site_author
         },
         "publisher" => %{
           "@type" => "Organization",
-          "name" => @site_name,
+          "name" => options.site_name,
           "logo" => %{
             "@type" => "ImageObject",
-            "url" => @site_logo_url
+            "url" => options.site_logo_url
           }
         }
       }
     ]
   end
 
-  defp build_page_title(title) when title in [nil, ""] do
-    @site_name
+  defp build_page_title(title, options) when title in [nil, ""] do
+    options.site_name
   end
 
-  defp build_page_title(title) do
-    "#{title} - #{@site_name}"
+  defp build_page_title(title, options) do
+    "#{title} - #{options.site_name}"
   end
 
   defp assign(%Socket{} = conn_or_socket, key, value) do
@@ -254,8 +253,8 @@ defmodule ExWebTools.SEO do
     Plug.Conn.assign(conn_or_socket, key, value)
   end
 
-  defp get_current_url(%Socket{} = conn_or_socket) do
-    base_url = @site_url
+  defp get_current_url(%Socket{} = conn_or_socket, options) do
+    base_url = options.site_url
 
     if conn_or_socket.assigns[:current_uri] do
       base_url
@@ -268,8 +267,8 @@ defmodule ExWebTools.SEO do
     end
   end
 
-  defp get_current_url(conn_or_socket) do
-    base_url = @site_url
+  defp get_current_url(conn_or_socket, options) do
+    base_url = options.site_url
     current = URI.parse(Phoenix.Controller.current_url(conn_or_socket, %{}))
 
     base_url

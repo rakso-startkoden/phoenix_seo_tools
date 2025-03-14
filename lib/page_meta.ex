@@ -1,9 +1,9 @@
-defmodule ExWebTools.PageMeta do
+defmodule PhoenixSEOTools.PageMeta do
   @moduledoc """
   A struct representing HTML meta tags for SEO purposes.
 
-  This struct is used by the `ExWebTools.SEO` module to generate the necessary
-  meta tags for your pages and is consumed by the `ExWebTools.Components.Head`
+  This struct is used by the `PhoenixSEOTools.SEO` module to generate the necessary
+  meta tags for your pages and is consumed by the `PhoenixSEOTools.Components.Head`
   component.
 
   ## Fields

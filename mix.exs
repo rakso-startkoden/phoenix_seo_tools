@@ -1,13 +1,14 @@
-defmodule ExWebTools.MixProject do
+defmodule PhoenixSEOTools.MixProject do
   use Mix.Project
 
+  @name :phoenix_seo_tools
   @version "0.0.1"
   @description "SEO optimization tools for Phoenix and Phoenix LiveView applications"
-  @source_url "https://github.com/startkoden/ex_web_tools"
+  @source_url "https://github.com/rakso-startkoden/phoenix_seo_tools"
 
   def project do
     [
-      app: :ex_web_tools,
+      app: @name,
       version: @version,
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
@@ -37,6 +38,7 @@ defmodule ExWebTools.MixProject do
 
   defp package do
     [
+      name: @name,
       maintainers: ["Startkoden"],
       licenses: ["MIT"],
       links: %{"GitHub" => @source_url},

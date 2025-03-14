@@ -1,6 +1,6 @@
-# ExWebTools
+# PhoenixSEOTools
 
-ExWebTools is a lightweight Elixir library for Phoenix and Phoenix LiveView applications that helps you build SEO-optimized websites with minimal configuration. It generates and manages meta tags, Open Graph tags, JSON-LD schemas, and canonical links to improve your site's search engine visibility and social media presentation.
+PhoenixSEOTools is a lightweight Elixir library for Phoenix and Phoenix LiveView applications that helps you build SEO-optimized websites with minimal configuration. It generates and manages meta tags, Open Graph tags, JSON-LD schemas, and canonical links to improve your site's search engine visibility and social media presentation.
 
 ## Features
 
@@ -13,12 +13,12 @@ ExWebTools is a lightweight Elixir library for Phoenix and Phoenix LiveView appl
 
 ## Installation
 
-Add `ex_web_tools` to your list of dependencies in `mix.exs`:
+Add `phoenix_seo_tools` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:ex_web_tools, "~> 0.0.1"}
+    {:phoenix_seo_tools, "~> 0.0.1"}
   ]
 end
 ```
@@ -29,7 +29,7 @@ Add required configuration to your application's config:
 
 ```elixir
 # In config/config.exs
-config :ex_web_tools,
+config :phoenix_seo_tools,
   name: "My Site Name",
   url: "https://yourdomain.com",
   logo_url: "https://yourdomain.com/images/logo.png",
@@ -55,7 +55,7 @@ defmodule MyAppWeb.PageController do
     
     # Add SEO metadata
     conn
-    |> ExWebTools.SEO.build_meta(
+    |> PhoenixSEOTools.SEO.build_meta(
       title: page.title,
       description: page.description,
       image: page.hero_url,
@@ -80,7 +80,7 @@ defmodule MyAppWeb.ArticleLive do
     article = Articles.get_by_slug!(slug)
     
     # Add SEO metadata
-    socket = ExWebTools.SEO.build_meta(socket,
+    socket = PhoenixSEOTools.SEO.build_meta(socket,
       title: article.title,
       description: article.summary,
       image: article.cover_image_url,
@@ -106,14 +106,14 @@ Add the meta component to your `<head>` tag inside root layout:
 # In lib/your_app_web/components/layouts/root.html.heex
 <head>
   ...
-  <ExWebTools.Components.Head.meta meta={@meta} page_title={@page_title} />
+  <PhoenixSEOTools.Components.Head.meta meta={@meta} page_title={@page_title} />
   ...
 </head>
 ```
 
 ## Documentation
 
-Complete documentation is available at [https://hexdocs.pm/ex_web_tools](https://hexdocs.pm/ex_web_tools).
+Complete documentation is available at [https://hexdocs.pm/phoenix_seo_tools](https://hexdocs.pm/phoenix_seo_tools).
 
 ## License
 

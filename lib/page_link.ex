@@ -1,10 +1,10 @@
-defmodule ExWebTools.PageLink do
+defmodule PhoenixSEOTools.PageLink do
   @moduledoc """
   A struct representing HTML link tags for SEO purposes.
 
-  This struct is used by the `ExWebTools.SEO` module to generate the necessary
+  This struct is used by the `PhoenixSEOTools.SEO` module to generate the necessary
   link tags (like canonical URLs) for your pages and is consumed by the 
-  `ExWebTools.Components.Head` component.
+  `PhoenixSEOTools.Components.Head` component.
 
   ## Fields
 
