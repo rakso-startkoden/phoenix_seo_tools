@@ -2,7 +2,7 @@ defmodule PhoenixSEOTools.MixProject do
   use Mix.Project
 
   @name :phoenix_seo_tools
-  @version "0.0.2"
+  @version "0.0.3"
   @description "SEO optimization tools for Phoenix and Phoenix LiveView applications"
   @source_url "https://github.com/rakso-startkoden/phoenix_seo_tools"
 

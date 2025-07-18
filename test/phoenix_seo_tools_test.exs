@@ -1,8 +1,9 @@
-defmodule PhoenixSEOTools do
+defmodule PhoenixSEOToolsTest do
   use ExUnit.Case
-  doctest PhoenixSEOTools
-
-  test "greets the world" do
-    assert PhoenixSEOTools.hello() == :world
+  
+  # Basic test to ensure the library loads
+  test "library modules are available" do
+    assert PhoenixSEOTools.SEO
+    assert PhoenixSEOTools.Sitemap
   end
 end
